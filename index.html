@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TG Bets</title>
+    <style>
+        :root {
+            --telegram-blue: #0088cc;
+            --telegram-light-blue: #54a9eb;
+            --yes-color: #4CAF50;
+            --no-color: #f44336;
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--telegram-blue);
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 15px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .event-title {
+            font-size: 24px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .stats-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .stats-table th, .stats-table td {
+            text-align: center;
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .stats-table th {
+            font-weight: 600;
+            background-color: #f9f9f9;
+        }
+
+        .yes-column {
+            color: var(--yes-color);
+            font-weight: 600;
+        }
+
+        .no-column {
+            color: var(--no-color);
+            font-weight: 600;
+        }
+
+        .chart-container {
+            height: 250px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .betting-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .bet-option {
+            flex: 1;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .bet-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .bet-yes {
+            background-color: rgba(76, 175, 80, 0.1);
+            border: 2px solid var(--yes-color);
+        }
+
+        .bet-no {
+            background-color: rgba(244, 67, 54, 0.1);
+            border: 2px solid var(--no-color);
+        }
+
+        .bet-option h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .bet-yes h3 {
+            color: var(--yes-color);
+        }
+
+        .bet-no h3 {
+            color: var(--no-color);
+        }
+
+        .coefficient {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .bet-info {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .bet-button {
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bet-yes-btn {
+            background-color: var(--yes-color);
+        }
+
+        .bet-yes-btn:hover {
+            background-color: #3d8b40;
+        }
+
+        .bet-no-btn {
+            background-color: var(--no-color);
+        }
+
+        .bet-no-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .star-icon {
+            display: inline-block;
+            font-size: 20px;
+        }
+
+        .bet-input-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 8px 15px;
+            background: white;
+        }
+
+        .bet-input {
+            border: none;
+            outline: none;
+            font-size: 16px;
+            text-align: center;
+            width: 100%;
+            padding: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .percentage-display {
+            font-size: 16px;
+            margin-top: 5px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .betting-section {
+                flex-direction: column;
+            }
+            
+            .bet-option {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <svg class="logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#0088cc"/>
+                <path d="M17 8.5L14.5 17L12.5 15L10.5 17L8 8.5L17 8.5Z" fill="white"/>
+                <path d="M14 11.5L11 14.5L10.5 12L14 11.5Z" fill="#0088cc"/>
+            </svg>
+            <h1>TG Bets</h1>
+        </div>
+
+        <div class="card">
+            <div class="event-title">
+                Will My favorite creator end this challenge before the June 1st?
+            </div>
+
+            <div class="stats-container">
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th>Ставка</th>
+                            <th class="yes-column">Yes</th>
+                            <th class="no-column">No</th>
+                            <th>Всего</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Участники</td>
+                            <td class="yes-column">491</td>
+                            <td class="no-column">882</td>
+                            <td>1373</td>
+                        </tr>
+                        <tr>
+                            <td>Telegram Stars</td>
+                            <td class="yes-column">19,256</td>
+                            <td class="no-column">35,571</td>
+                            <td>54,827</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="bettingChart"></canvas>
+            </div>
+
+            <div class="betting-section">
+                <div class="bet-option bet-yes">
+                    <h3>Ставка на "Yes"</h3>
+                    <div class="coefficient">x2.85</div>
+                    <div class="percentage-display">35.8% ставок</div>
+                    <div class="bet-info">491 участников, 19,256 Stars</div>
+                    <div class="bet-input-container">
+                        <input type="number" class="bet-input" id="yes-bet-input" placeholder="Количество Stars" min="1">
+                    </div>
+                    <button class="bet-button bet-yes-btn">
+                        <span class="star-icon">★</span> Сделать ставку
+                    </button>
+                </div>
+
+                <div class="bet-option bet-no">
+                    <h3>Ставка на "No"</h3>
+                    <div class="coefficient">x1.54</div>
+                    <div class="percentage-display">64.2% ставок</div>
+                    <div class="bet-info">882 участников, 35,571 Stars</div>
+                    <div class="bet-input-container">
+                        <input type="number" class="bet-input" id="no-bet-input" placeholder="Количество Stars" min="1">
+                    </div>
+                    <button class="bet-button bet-no-btn">
+                        <span class="star-icon">★</span> Сделать ставку
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            © 2025 Telegram Stars Betting Platform
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // Данные для графика
+        const yesAmount = 19256;
+        const noAmount = 35571;
+        const yesPeople = 491;
+        const noPeople = 882;
+        const totalAmount = yesAmount + noAmount;
+        
+        // Расчет коэффициентов
+        const yesCoefficient = (totalAmount / yesAmount).toFixed(2);
+        const noCoefficient = (totalAmount / noAmount).toFixed(2);
+        
+        // Расчет процентов
+        const yesPercentage = ((yesAmount / totalAmount) * 100).toFixed(1);
+        const noPercentage = ((noAmount / totalAmount) * 100).toFixed(1);
+        
+        // Обновление элементов на странице
+        document.querySelector('.bet-yes .coefficient').textContent = `x${yesCoefficient}`;
+        document.querySelector('.bet-no .coefficient').textContent = `x${noCoefficient}`;
+        document.querySelector('.bet-yes .percentage-display').textContent = `${yesPercentage}% ставок`;
+        document.querySelector('.bet-no .percentage-display').textContent = `${noPercentage}% ставок`;
+        
+        // Создание графика
+        const ctx = document.getElementById('bettingChart').getContext('2d');
+        const bettingChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Ставки на "Yes"', 'Ставки на "No"'],
+                datasets: [
+                    {
+                        label: 'Telegram Stars',
+                        data: [yesAmount, noAmount],
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.7)',
+                            'rgba(244, 67, 54, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(76, 175, 80, 1)',
+                            'rgba(244, 67, 54, 1)'
+                        ],
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Участники',
+                        data: [yesPeople, noPeople],
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.3)',
+                            'rgba(244, 67, 54, 0.3)'
+                        ],
+                        borderColor: [
+                            'rgba(76, 175, 80, 1)',
+                            'rgba(244, 67, 54, 1)'
+                        ],
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                if (value >= 1000) {
+                                    return value / 1000 + 'k';
+                                }
+                                return value;
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat().format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Обработчики событий для кнопок ставок
+        document.querySelector('.bet-yes-btn').addEventListener('click', function() {
+            const betAmount = document.getElementById('yes-bet-input').value;
+            if (betAmount && betAmount > 0) {
+                alert(`Ваша ставка ${betAmount} Stars на "Yes" принята! Возможный выигрыш: ${(betAmount * yesCoefficient).toFixed(2)} Stars`);
+            } else {
+                alert('Пожалуйста, введите сумму ставки');
+            }
+        });
+        
+        document.querySelector('.bet-no-btn').addEventListener('click', function() {
+            const betAmount = document.getElementById('no-bet-input').value;
+            if (betAmount && betAmount > 0) {
+                alert(`Ваша ставка ${betAmount} Stars на "No" принята! Возможный выигрыш: ${(betAmount * noCoefficient).toFixed(2)} Stars`);
+            } else {
+                alert('Пожалуйста, введите сумму ставки');
+            }
+        });
+    </script>
+</body>
+</html>
